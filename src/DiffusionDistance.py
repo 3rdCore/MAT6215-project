@@ -29,13 +29,13 @@ class DiffusionDistance:
         compute_density_norm_matrix(self)
         compute_diffusion_Matrix(self)
         compute_stationnary_distrib(self)
+        compute_custom_diffusion_distance(self)
         return
     
     def fit_transform(self):
         self.fit()
         embedding = MDS(n_components=2)  #Multidimentional scaling
-        return embedding.fit_transform(self.X)
-        
+        return embedding.fit_transform(self.G)    
     
     def compute_density_norm_matrix(self):
         K = self.kernel(self.X)
