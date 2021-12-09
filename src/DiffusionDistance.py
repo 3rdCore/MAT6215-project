@@ -20,23 +20,10 @@ class DiffusionDistance:
     P = None
     pi = None
     G = None
-    def __init__(self, kernel, X, t_max) -> None:
+    def __init__(self, kernel, t_max) -> None:
         self.kernel= kernel
-        self.X = X
         self.t_max = t_max
         
-    def fit(self):
-        compute_density_norm_matrix(self)
-        compute_diffusion_Matrix(self)
-        compute_stationnary_distrib(self)
-        compute_custom_diffusion_distance(self)
-        return
-    
-    def fit_transform(self):
-        self.fit()
-        embedding = MDS(n_components=2)  #Multidimentional scaling
-        return embedding.fit_transform(self.G)    
-    
     def compute_density_norm_matrix(self):
         K = self.kernel(self.X)
         Q = np.diag(np.sum(K, axis= 1))
@@ -66,6 +53,20 @@ class DiffusionDistance:
 
         self.G = G
         return self.G
+    
+    def fit(self, X):
+        self.X = X
+        self.compute_density_norm_matrix()
+        self.compute_diffusion_Matrix()
+        self.compute_stationnary_distrib()
+        self.compute_custom_diffusion_distance()
+        return
+    
+    def fit_transform(self, X):
+        self.fit(X)
+        embedding = MDS(n_components=2)  #Multidimentional scaling
+        return embedding.fit_transform(self.G)    
+    
         
 #for unit test
 class testDiffusionDistance(unittest.TestCase):
@@ -73,8 +74,8 @@ class testDiffusionDistance(unittest.TestCase):
     epsilon = 2
     length_scale =np.sqrt(epsilon/2)
     kernel = 1.0 * RBF(length_scale)
-    DD = DiffusionDistance(kernel, X, 1)
-    
+    DD = DiffusionDistance(kernel, 1)
+    DD.X = X
     def exemple(self):
         #example
         #self.assertEqual('foo'.upper(), 'FOO')
